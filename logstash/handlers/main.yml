@@ -1,0 +1,6 @@
+---
+# handlers file for elk-connection/server
+- name: restart logstash
+  service:
+    name: logstash
+    state: restarted

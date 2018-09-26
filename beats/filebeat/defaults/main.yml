@@ -1,0 +1,10 @@
+---
+# defaults file for elk-beats
+
+filebeat:
+  port: "12000"
+  config_path: "/etc/filebeat/"
+
+logstash:
+  host: "localhost"
+  port: "5044"

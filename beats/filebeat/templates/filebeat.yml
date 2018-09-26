@@ -1,0 +1,37 @@
+filebeat.modules:
+- module: elasticsearch
+  server:
+    enabled: true
+  gc:
+    enabled: true
+  audit:
+    enabled: true
+  slowlog:
+    enabled: true
+  deprecation:
+    enabled: true
+- module: kafka
+  log:
+    enabled: true
+- module: kibana
+  log:
+    enabled: true
+- module: osquery
+  result:
+    enabled: true
+
+filebeat.inputs:
+- type: log
+  enabled: false
+  paths:
+    - /var/log/*.log
+- type: tcp
+  max_message_size: 20MiB
+  host: "localhost:{{ filebeat.port }}"
+
+json.message_key: tcp
+
+logging.to_files: true
+
+output.logstash:
+  hosts: "{{ logstash.host }}:{{ logstash.port }}"

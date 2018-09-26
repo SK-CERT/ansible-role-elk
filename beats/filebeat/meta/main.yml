@@ -7,3 +7,6 @@ galaxy_info:
   - name: Ubuntu server
     versions:
     - 16.04
+
+dependencies:
+  - common/elk/base

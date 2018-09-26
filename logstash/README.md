@@ -11,13 +11,19 @@ None
 Role Variables
 --------------
 
-    pipelines: <list of pipeline configurations>
-    plugins: <list of plugin names to be installed>
+    elastic:
+      host: "127.0.0.1"
+      port: "9200"
+      index: "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+
+    logstash:
+      port: "5044"
+      config_path: "/etc/logstash/conf.d/"
+
+    codec: "json"
 
 Dependencies
 ------------
-
-common/elk/base
 
 Example Playbook
 ----------------
