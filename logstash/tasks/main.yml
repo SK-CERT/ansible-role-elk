@@ -7,8 +7,11 @@
 - name: configure logstash port
   template:
     src: beats.conf
-    dest: "{{ logstash.config_path }}/beats_{{ logstash.port }}.conf"
+    dest: "{{ logstash.config_path }}/beats_{{ logstash.tcp.port }}.conf"
     mode: "u=rw,go=r"
+  when:
+    - logstash.tcp is defined
+    - logstash.tcp.port is defined
   tags: configure
 
 - name: setup configured pipelines

@@ -7,7 +7,5 @@ elastic:
   index: "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
 
 logstash:
-  port: "5044"
   config_path: "/etc/logstash/conf.d/"
 
-codec: "json"
