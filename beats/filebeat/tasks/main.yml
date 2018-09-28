@@ -14,3 +14,10 @@
     dest: "{{ filebeat.config_path }}/filebeat.yml"
   notify: restart filebeat
   tags: configure
+
+- name: enable filebeat on boot
+  systemd:
+    name: filebeat
+    enabled: yes
+    state: restarted
+  tags: configure
