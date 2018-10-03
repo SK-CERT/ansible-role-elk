@@ -1,3 +1,9 @@
+- name: install java runtime environment
+  package:
+    name: openjdk-8-jre-headless
+    state: present
+  tags: install
+
 - name: install logstash
   package:
     name: logstash
