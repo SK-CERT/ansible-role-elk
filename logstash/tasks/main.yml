@@ -1,10 +1,10 @@
-- name: install java runtime environment
+- name: establish dependencies 
   package:
     name: openjdk-8-jre-headless
     state: present
   tags: install
 
-- name: install logstash
+- name: establish logstash
   package:
     name: logstash
     state: present
@@ -12,15 +12,15 @@
 
 - name: configure logstash port
   template:
-    src: beats.conf
-    dest: "{{ logstash.config_path }}/beats_{{ logstash.tcp.port }}.conf"
+    src: pipeline.conf.j2
+    dest: "{{ logstash.config_path }}/{{ configuration.name | regex_replace('[^0-9a-zA-Z_]+', '_') }}.conf"
     mode: "u=rw,go=r"
-  when:
-    - logstash.tcp is defined
-    - logstash.tcp.port is defined
+  loop_control:
+    loop_var: configuration
+  with_items: "{{ pipeline_configuration }}"
   tags: configure
 
-- name: setup configured pipelines
+- name: initiate configured pipelines
   systemd:
     name: logstash
     enabled: yes

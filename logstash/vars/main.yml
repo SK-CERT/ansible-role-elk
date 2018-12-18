@@ -1,0 +1,5 @@
+---
+
+logstash:
+  config_path: "/etc/logstash/conf.d/"
+

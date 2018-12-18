@@ -11,19 +11,23 @@ None
 Role Variables
 --------------
 
-    elastic:
-      host: "127.0.0.1"
-      port: "9200"
-      index: "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
-
-    logstash:
-      port: "5044"
-      config_path: "/etc/logstash/conf.d/"
-
-    codec: "json"
+    pipeline_configuration: <list of pipeline configurations>
+      - name: <pipeline name - retains only alphanumeric chars and underscore>
+        input:
+          type: <list of inputs (dictionaries)>
+        filter:
+          __if: <an 'if' clause - uses a string predicate (at toplevel or element level)>
+          type: <list filters (dictionaries)>
+        output:
+          type:
+            - __if: <an 'if' clause - block level predicate string>
+              <output>:
+                <setting>
 
 Dependencies
 ------------
+
+common/elk/base
 
 Example Playbook
 ----------------
