@@ -10,6 +10,11 @@
     state: present
   tags: install
 
+- name: establish logstash plugins
+  become: yes
+  command: "/usr/share/logstash/bin/logstash-plugin install {{ item }}"
+  with_items: "{{ plugins }}"
+
 - name: configure logstash port
   template:
     src: pipeline.conf.j2
