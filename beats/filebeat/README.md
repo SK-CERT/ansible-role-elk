@@ -1,7 +1,7 @@
-Role Name
+Filebeat
 =========
 
-Install Elastic Beats - lightweight data shippers for Elasticsearch.
+Install Elastic Stack Beat (filebeat).
 
 Requirements
 ------------
@@ -11,13 +11,11 @@ None
 Role Variables
 --------------
 
-filebeat:
-  port: "12000"
-  config_path: "/etc/filebeat/"
+configuration: <the entire yaml configuration to be stored in the filebeat configuration file>
 
-logstash:
-  host: "localhost"
-  port: "5044"
+filebeat:
+  enabled: <bool, enable the service on startup> 
+  state: <enum, state of the systemd service>
 
 Dependencies
 ------------
@@ -33,9 +31,14 @@ Information about local filebeat TCP output port, destination logstash host and 
       roles:
        - role: elk/beats/filebeat
          vars:
-           logstash:
-             host: "192.168.1.5"
-             port = "13568"
+           configuration:
+             filebeat:
+               inputs:
+               - host: localhost:11999
+                 type: tcp
+             output:
+               logstash:
+                 hosts: logstash:5959
 
 License
 -------

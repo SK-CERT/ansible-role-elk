@@ -1,23 +1,20 @@
 ---
-# tasks file for elk-beats
 
 - name: ensure filebeat presence
-  apt:
+  package:
     name: filebeat
     state: present
-    update_cache: yes
   tags: install
 
-- name: configure filebeat connection to logstash using 
+- name: establish filebeat configuration 
   template:
-    src: filebeat.yml
-    dest: "{{ filebeat.config_path }}/filebeat.yml"
-  notify: restart filebeat
+    src: filebeat.yml.j2
+    dest: "{{ config_path }}/filebeat.yml"
   tags: configure
 
-- name: enable filebeat on boot
+- name: establish filebeat systemd configuration
   systemd:
     name: filebeat
-    enabled: yes
-    state: restarted
+    enabled: "{{ filebeat['enabled'] }}" 
+    state: "{{ filebeat['state'] }}"
   tags: configure
