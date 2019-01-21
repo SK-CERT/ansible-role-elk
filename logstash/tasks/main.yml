@@ -1,9 +1,3 @@
-- name: establish dependencies 
-  package:
-    name: openjdk-8-jre-headless
-    state: present
-  tags: install
-
 - name: establish logstash
   package:
     name: logstash
@@ -12,8 +6,12 @@
 
 - name: establish logstash plugins
   become: yes
-  command: "/usr/share/logstash/bin/logstash-plugin install {{ item }}"
+  logstash_plugin:
+    name:  "{{ item }}"
+    state: present
   with_items: "{{ plugins }}"
+  notify: restart logstash
+  tags: install
 
 - name: configure logstash port
   template:
@@ -23,12 +21,13 @@
   loop_control:
     loop_var: configuration
   with_items: "{{ pipeline_configuration }}"
+  notify: restart logstash
   tags: configure
 
 - name: initiate configured pipelines
   systemd:
     name: logstash
     enabled: yes
-    state: restarted
+    state: started
   tags: configure
 
