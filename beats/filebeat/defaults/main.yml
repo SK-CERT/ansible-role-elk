@@ -2,4 +2,4 @@
 
 filebeat:
   enabled: yes
-  state: restarted
+  state: started
