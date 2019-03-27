@@ -1,46 +1,17 @@
 # {{ ansible_managed }} 
 
-{% macro print_children(parent, children, indent=4) -%}
-  {{- "%s {" | format(parent) | indent(indent, ' ') + '\n' -}} 
-  {%- for a, b in children.items() -%}
-    {{- "%s => %s" | format(a, b.__repr__() | regex_replace('^True$','true') | regex_replace('^False$', 'false')) | indent(indent + 2, ' ') + '\n' -}}
-  {%- endfor -%}
-  {{- "}" | indent(indent, ' ') + '\n'  -}} 
-{%- endmacro -%}
-
-{%- macro walk_top_level(target, element) -%}
-  {%- if element in target and 'type' in target[element] -%}
-    {%- set current_indent = 2 if '__if' in target[element] else 0 -%}
-      {%- if '__if' in target[element] -%}
-        {{- "if %s {" | format(target[element]['__if']) | indent(current_indent, ' ') + '\n' -}}
-      {%- endif -%}
-    {%- for option in target[element]['type'] -%}
-      {%- if '__if' in option -%}
-        {%- set current_indent = current_indent + 2 -%}
-        {{- "if %s {" | format(option['__if']) | indent(current_indent, ' ') + '\n' -}}
-      {%- endif -%}
-      {%- for k, v in option.items() if k != '__if' %}
-        {{- print_children(k, v, indent=current_indent+2) -}}
-      {%- endfor %}
-      {%- if '__if' in option -%}
-        {%- set current_indent = current_indent - 2 -%}
-        {{- "}" | indent(current_indent+2, ' ') + '\n' -}}
-      {%- endif -%}
-    {%- endfor -%}
-    {%- if '__if' in target[element] -%}
-      {{- "}" | indent(current_indent, ' ') + '\n' -}}
-    {%- endif -%}
-  {%- endif -%}
+{% macro print_indented(s, indent=2) -%}
+{{- '' if s == '' else s | indent(width=2, first=true) -}}
 {%- endmacro -%}
 
 input {
-{{ walk_top_level(configuration, 'input') -}}
+{{ print_indented(pipeline.get('input',''))  -}}
 }
 
 filter {
-{{ walk_top_level(configuration, 'filter') -}}
+{{ print_indented(pipeline.get('filter','')) -}}
 }
 
 output {
-{{ walk_top_level(configuration, 'output') -}}
+{{ print_indented(pipeline.get('output','')) -}}
 }

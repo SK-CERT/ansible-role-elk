@@ -11,18 +11,8 @@ None
 Role Variables
 --------------
 
-    pipeline_configuration: <list of pipeline configurations>
-      - name: <pipeline name - retains only alphanumeric chars and underscore>
-        input:
-          type: <list of inputs (dictionaries)>
-        filter:
-          __if: <an 'if' clause - uses a string predicate (at toplevel or element level)>
-          type: <list filters (dictionaries)>
-        output:
-          type:
-            - __if: <an 'if' clause - block level predicate string>
-              <output>:
-                <setting>
+    pipelines: <list of pipeline configurations>
+    plugins: <list of plugin names to be installed>
 
 Dependencies
 ------------
