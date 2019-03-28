@@ -16,6 +16,14 @@
   notify: restart logstash
   tags: install
 
+- name: enable service
+  become: yes
+  systemd:
+    name: logstash
+    enabled: yes
+    state: started
+  tags: install
+
 - name: load platform specific variables
   # include_vars: "{{ lookup('first_found', params, errors='ignore') }}"
   include_vars: "{{ item }}"
@@ -41,13 +49,5 @@
     loop_var: pipeline
   with_items: "{{ pipelines }}"
   notify: restart logstash
-  tags: configure
-
-- name: enable service
-  become: yes
-  systemd:
-    name: logstash
-    enabled: yes
-    state: started
   tags: configure
 
