@@ -1,0 +1,8 @@
+galaxy_info:
+  author: Tibor Csoka
+  license: GPLv3
+
+  min_ansible_version: 2.6
+
+dependencies:
+  - common/elk/base
