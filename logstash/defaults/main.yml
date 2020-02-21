@@ -3,3 +3,5 @@
 pipelines: []
 
 plugins: []
+
+install_custom_fingerprint_plugin: false
