@@ -1,0 +1,76 @@
+---
+
+- name: establish git package
+  package:
+    name: git
+  tags: install
+
+- name: clone forked logstash-filter-fingerprint repo
+  git:
+    repo: "{{ repo.url }}"
+    version: "{{ repo.version }}"
+    dest: "{{ repo.dest }}"
+  tags: install
+
+- name: set fact | git repo dir
+  set_fact:
+    git_repo_dir: "{{ repo.dest }}"
+
+- name: retrieve the logstash home dir
+  shell: >
+    grep "LS_HOME=[/a-zA-Z0-9]*" /etc/logstash/startup.options | cut -d'=' -f2
+  changed_when: false
+  register: ls_home_dir
+
+- name: build gem file
+  command: "{{ ls_home_dir.stdout  }}/bin/ruby {{ ls_home_dir.stdout }}/vendor/jruby/bin/gem build logstash-filter-fingerprint.gemspec"
+  args:
+    chdir: "{{ git_repo_dir }}"
+
+- name: retrieve list of logstash plugins
+  command: "./bin/logstash-plugin list"
+  args:
+    chdir: "{{ ls_home_dir.stdout }}"
+  register: ls_plugins_list
+
+- when: "'logstash-filter-fingerprint' in ls_plugins_list.stdout"
+  block:
+  - name: search for custom installation of logstash-filter-fingerprint
+    find:
+      file_type: directory
+      paths:
+        - "{{ ls_home_dir.stdout }}/vendor/local_gems"
+      recurse: true
+      patterns:
+        - "logstash-filter-fingerprint*"
+    register: local_plugin_search
+
+# remove the current plugin only if it exists and isnt in local_gems/
+  - name: remove logstash-filter-fingerprint plugin
+    when: "local_plugin_search.matched == 0"
+    command: "./bin/logstash-plugin remove logstash-filter-fingerprint"
+    args:
+      chdir: "{{ ls_home_dir.stdout }}"
+
+# search for a non custom plugin in $LS_HOME/vendor/bundle
+- name: attempt to locate the logstash-filter-fingerprint plugin
+  find:
+    file_type: directory
+    paths:
+      - "{{ ls_home_dir.stdout }}/vendor/bundle"
+    recurse: true
+    patterns:
+      - "logstash-filter-fingerprint*"
+  register: plugin_search
+
+- name: remove the logstash-filter-fingerprint gem presence
+  when: "plugin_search.matched > 0"
+  file:
+    path: "{{ plugin_search['files'][0]['path'] }}"
+    state: absent
+
+# installs new plugin only if the plugin is missing
+- name: install custom logstash-filter-fingerprint plugin
+  when: "'logstash-filter-fingerprint' not in ls_plugins_list.stdout or local_plugin_search.matched == 0"
+  command: "{{ ls_home_dir.stdout }}/bin/logstash-plugin install {{ git_repo_dir }}/logstash-filter-fingerprint-3.2.1.gem"
+  notify: restart logstash
