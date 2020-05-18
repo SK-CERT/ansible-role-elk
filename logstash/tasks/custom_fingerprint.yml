@@ -68,6 +68,7 @@
   file:
     path: "{{ plugin_search['files'][0]['path'] }}"
     state: absent
+  notify: restart logstash
 
 # installs new plugin only if the plugin is missing
 - name: install custom logstash-filter-fingerprint plugin
