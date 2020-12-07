@@ -72,6 +72,5 @@
 
 # installs new plugin only if the plugin is missing
 - name: install custom logstash-filter-fingerprint plugin
-  when: "'logstash-filter-fingerprint' not in ls_plugins_list.stdout or local_plugin_search.matched == 0"
   command: "{{ ls_home_dir.stdout }}/bin/logstash-plugin install {{ git_repo_dir }}/logstash-filter-fingerprint-3.2.1.gem"
   notify: restart logstash
