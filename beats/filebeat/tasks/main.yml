@@ -6,18 +6,17 @@
     state: present
   tags: install
 
-- name: establish filebeat configuration 
+- name: establish filebeat configuration
+  when: filebeat_configuration is defined and filebeat_configuration
   template:
     src: filebeat.yml.j2
-    dest: "{{ config_path }}/filebeat.yml"
-  register: filebeat_setup_file
+    dest: "{{ filebeat_config_path }}/filebeat.yml"
+  notify: restart filebeat
   tags: configure
 
 - name: establish filebeat systemd configuration
   systemd:
     name: filebeat
-    enabled: "{{ filebeat['enabled'] }}" 
-    state: "{{ 'restarted' if filebeat['state'] == 'started' else filebeat['state'] }}"
-  when: filebeat_setup_file is changed
+    enabled: true
+    state: started
   tags: configure
-

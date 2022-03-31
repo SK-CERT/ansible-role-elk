@@ -1,5 +1,4 @@
 ---
 
-filebeat:
-  enabled: yes
-  state: started
+# filebeat configuration in pure yaml
+filebeat_configuration: {}

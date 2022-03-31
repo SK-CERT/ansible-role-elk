@@ -11,11 +11,7 @@ None
 Role Variables
 --------------
 
-configuration: <the entire yaml configuration to be stored in the filebeat configuration file>
-
-filebeat:
-  enabled: <bool, enable the service on startup> 
-  state: <enum, state of the systemd service>
+filebeat_configuration: <the entire yaml configuration to be stored in the filebeat configuration file>
 
 Dependencies
 ------------
@@ -25,13 +21,11 @@ None
 Example Playbook
 ----------------
 
-Information about local filebeat TCP output port, destination logstash host and port are necessary.
-
-    - hosts: clients
+    - hosts: agents
       roles:
        - role: elk/beats/filebeat
          vars:
-           configuration:
+           filebeat_configuration:
              filebeat:
                inputs:
                - host: localhost:11999

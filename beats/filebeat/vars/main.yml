@@ -1,4 +1,3 @@
 ---
 
-config_path: "/etc/filebeat/"
-
+filebeat_config_path: "/etc/filebeat/"
