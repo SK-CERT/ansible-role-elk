@@ -12,7 +12,7 @@
   logstash_plugin:
     name:  "{{ item }}"
     state: present
-  with_items: "{{ plugins }}"
+  with_items: "{{ logstash_plugins }}"
   notify: restart logstash
   tags: install
 
@@ -42,14 +42,14 @@
   become: yes
   template:
     src: pipeline.conf.j2
-    dest: "{{ logstash['pipelines']['path'] }}/{{ pipeline.name | regex_replace('[^0-9a-zA-Z_]+', '_') | lower }}.conf"
+    dest: "{{ logstash_pipelines_path }}/{{ pipeline.name | regex_replace('[^0-9a-zA-Z_]+', '_') | lower }}.conf"
     mode: "u=rw,go=r"
-    validate: "sudo -u logstash {{ logstash['binary'] }} -t -f %s --debug --verbose"
+    # validate: "sudo -u logstash {{ logstash_binary }} -t -f %s --debug --verbose"
   loop_control:
     loop_var: pipeline
-  with_items: "{{ pipelines }}"
+  with_items: "{{ logstash_pipelines }}"
   notify: restart logstash
   tags: configure
 
-- when: "install_custom_fingerprint_plugin"
+- when: logstash_install_custom_fingerprint_plugin
   include: custom_fingerprint.yml

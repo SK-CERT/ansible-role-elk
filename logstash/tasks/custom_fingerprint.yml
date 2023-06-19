@@ -3,37 +3,42 @@
 - name: establish git package
   package:
     name: git
-  tags: install
-
-- name: clone forked logstash-filter-fingerprint repo
-  git:
-    repo: "{{ repo.url }}"
-    version: "{{ repo.version }}"
-    dest: "{{ repo.dest }}"
-  tags: install
+  tags: configure
 
 - name: set fact | git repo dir
   set_fact:
-    git_repo_dir: "{{ repo.dest }}"
+    git_repo_dir: "{{ logstash_custom_fingerprint_plugin_repo.dest }}"
+  tags: configure
+
+- name: clone forked logstash-filter-fingerprint repo
+  git:
+    repo: "{{ logstash_custom_fingerprint_plugin_repo.url }}"
+    version: "{{ logstash_custom_fingerprint_plugin_repo.version }}"
+    dest: "{{ git_repo_dir }}"
+  tags: configure
 
 - name: retrieve the logstash home dir
   shell: >
     grep "LS_HOME=[/a-zA-Z0-9]*" /etc/logstash/startup.options | cut -d'=' -f2
   changed_when: false
   register: ls_home_dir
+  tags: configure
 
 - name: build gem file
   command: "{{ ls_home_dir.stdout  }}/bin/ruby {{ ls_home_dir.stdout }}/vendor/jruby/bin/gem build logstash-filter-fingerprint.gemspec"
   args:
     chdir: "{{ git_repo_dir }}"
+  tags: configure
 
 - name: retrieve list of logstash plugins
   command: "./bin/logstash-plugin list"
   args:
     chdir: "{{ ls_home_dir.stdout }}"
   register: ls_plugins_list
+  tags: configure
 
 - when: "'logstash-filter-fingerprint' in ls_plugins_list.stdout"
+  tags: configure
   block:
   - name: search for custom installation of logstash-filter-fingerprint
     find:
@@ -62,6 +67,7 @@
     patterns:
       - "logstash-filter-fingerprint*"
   register: plugin_search
+  tags: configure
 
 - name: remove the logstash-filter-fingerprint gem presence
   when: "plugin_search.matched > 0"
@@ -69,8 +75,10 @@
     path: "{{ plugin_search['files'][0]['path'] }}"
     state: absent
   notify: restart logstash
+  tags: configure
 
 # installs new plugin only if the plugin is missing
 - name: install custom logstash-filter-fingerprint plugin
   command: "{{ ls_home_dir.stdout }}/bin/logstash-plugin install {{ git_repo_dir }}/logstash-filter-fingerprint-3.2.1.gem"
   notify: restart logstash
+  tags: configure

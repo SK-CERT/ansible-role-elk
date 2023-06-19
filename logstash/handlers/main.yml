@@ -4,3 +4,4 @@
   service:
     name: logstash
     state: restarted
+  tags: always

@@ -1,7 +1,7 @@
 ---
 
-pipelines: []
+logstash_pipelines: []
 
-plugins: []
+logstash_plugins: []
 
-install_custom_fingerprint_plugin: false
+logstash_install_custom_fingerprint_plugin: false

@@ -1,7 +1,5 @@
 ---
 
-logstash:
-  pipelines:
-    path: "/etc/logstash/conf.d/"
-  binary: "/usr/share/logstash/bin/logstash"
+logstash_pipelines_path: "/etc/logstash/conf.d/"
+logstash_binary: "/usr/share/logstash/bin/logstash"
 
